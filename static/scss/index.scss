@@ -1,0 +1,18 @@
+@import "@/uni_modules/uview-ui/index.scss";
+
+page {
+	-webkit-overflow-scrolling: touch; // ios滑动不流畅
+	height: 100%;
+	width: 100%;
+	font-size: 30rpx;
+	word-break: break-all; //英文文本不换行
+	white-space: normal;
+	color: #303133;
+}
+
+::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	color: transparent;
+	display: none;
+}
