@@ -1,61 +1,56 @@
 <template>
 	<view class="container">
-		<u-form v-if="loginType=='password'" :model="pl" ref="pl">
-			<u-form-item label="账号" prop="account">
-				<u-input v-model="pl.account" type="number" maxlength="11" placeholder="请输入手机号"></u-input>
+		<u--form v-if="loginType=='password'" :model="pl" ref="pl">
+			<u-form-item label="账号" prop="account" borderBottom>
+				<u--input border="none" v-model="pl.account" type="number" maxlength="11" placeholder="请输入手机号">
+				</u--input>
 			</u-form-item>
-			<u-form-item label="密码" prop="password">
-				<u-input v-model="pl.password" type="password" maxlength="16" placeholder="请输入密码" :password-icon="true">
+			<u-form-item borderBottom label="密码" prop="password">
+				<u-input border="none" v-model="pl.password" :type="pwdType" maxlength="16" placeholder="请输入密码">
+					<template slot="suffix">
+						<u-icon :name="isPassword?'eye-fill':'eye-off'" @click="showPassword()"></u-icon>
+					</template>
+				</u-input>
+			</u-form-item>
+			<u-form-item borderBottom label="密码" prop="rePassword">
+				<u-input border="none" v-model="pl.rePassword" :type="pwdType1" maxlength="16" placeholder="请输入密码">
+					<template slot="suffix">
+						<u-icon :name="isPassword1?'eye-fill':'eye-off'" @click="showPassword1()"></u-icon>
+					</template>
 				</u-input>
 			</u-form-item>
 			<view class="form-item">
-				<u-button type="primary" @click="loginByPassword">登录</u-button>
+				<u-button type="primary" @click="submit" text="注册"></u-button>
 			</view>
 			<view class="form-item">
 				<view class="link">
-					<text @click="loginType='verify'">验证登录</text>
-					<text @click="gotoForget">忘记密码</text>
-					<text @click="gotoRegister">用户注册</text>
+					<text @click="gotoLogin">用户登录</text>
 				</view>
 			</view>
-		</u-form>
-		<u-form v-else-if="loginType=='verify'" :model="vl" ref="vl">
-			<u-verification-code seconds="60" ref="verifyCode" @change="verifyCodeChange"></u-verification-code>
-			<u-form-item label="手机号" label-width="150" prop="account">
-				<u-input v-model="vl.account" type="number" maxlength="11" placeholder="请输入手机号"></u-input>
-			</u-form-item>
-			<u-form-item label="验证码" label-width="150" prop="verifyCode">
-				<u-input v-model="vl.verify_code" type="number" maxlength="6" placeholder="请输入验证码"></u-input>
-				<u-button slot="right" type="success" size="mini" @click="getVerifyCode">{{ verifyCodeTips }}</u-button>
-			</u-form-item>
-			<view class="form-item">
-				<u-button type="primary" @click="loginByVerify">登录</u-button>
-			</view>
-			<view class="form-item">
-				<view class="link">
-					<text @click="loginType='password'">密码登录</text>
-					<text @click="gotoForget">忘记密码</text>
-					<text @click="gotoRegister">用户注册</text>
-				</view>
-			</view>
-		</u-form>
+		</u--form>
 	</view>
 </template>
 
 <script>
+	import {
+		mapMutations,
+		mapActions,
+		mapState,
+		mapGetters
+	} from 'vuex';
+
 	export default {
 		data() {
 			return {
+				isPassword: false,
+				pwdType: 'password',
+				isPassword1: false,
+				pwdType1: 'password',
 				loginType: 'password',
-				redirectUrl: '/pages/index/index',
-				verifyCodeTips: '',
 				pl: {
 					account: '',
-					password: ''
-				},
-				vl: {
-					account: '',
-					verify_code: ''
+					password: '',
+					rePassword: '',
 				},
 				plRules: {
 					account: [{
@@ -68,96 +63,78 @@
 						message: '无效的手机号'
 					}],
 					password: [{
-						required: true,
-						message: '请填写账户密码'
-					}, {
-						min: 6,
-						max: 16,
-						message: '密码6-16个字符'
-					}]
-				},
-				vlRules: {
-					account: [{
-						required: true,
-						message: '请填写手机号'
-					}, {
-						validator: (rule, value, callback) => {
-							return this.$u.test.mobile(value)
+							required: true,
+							message: '请输入密码',
+							trigger: ['change', 'blur'],
 						},
-						message: '无效的手机号'
-					}],
-					verify_code: [{
-						required: true,
-						message: '请填写验证码'
-					}, {
-						len: 6,
-						message: '无效的验证码'
-					}]
-				}
+						{
+							// 正则不能含有两边的引号
+							pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]+\S{5,12}$/,
+							message: '需同时含有字母和数字，长度在6-12之间',
+							trigger: ['change', 'blur'],
+						}
+					],
+					rePassword: [{
+							required: true,
+							message: '请重新输入密码',
+							trigger: ['change', 'blur'],
+						},
+						{
+							validator: (rule, value, callback) => {
+								return value === this.pl.password;
+							},
+							message: '两次输入的密码不相等',
+							trigger: ['change', 'blur'],
+						}
+					],
+				},
 			}
 		},
-		onLoad(e) {
-			if (e.redirect) {
-				this.redirectUrl = e.redirect
-			}
+		computed: {
+			...mapGetters(['isLogin']),
 		},
+		onLoad(e) {},
 		onReady() {
-			if (this.loginType == 'password') {
-				this.$refs.pl.setRules(this.plRules)
-			} else {
-				this.$refs.vl.setRules(this.vlRules)
-			}
+			this.$refs.pl.setRules(this.plRules)
 		},
 		onShow() {
-			if (this.$utils.isLogin()) {
-				this.$utils.redirect('/pages/me/index')
+			if (this.isLogin) {
+				uni.navigateTo({
+					url: '/pages/me/index'
+				});
 			}
 		},
 		methods: {
-			verifyCodeChange(text) {
-				this.verifyCodeTips = text
+			showPassword() {
+				this.pwdType = this.pwdType === 'password' ? 'text' : 'password';
+				this.isPassword = !this.isPassword;
 			},
-			getVerifyCode: async function() {},
-			loginByPassword() {
+			showPassword1() {
+				this.pwdType = this.pwdType === 'password' ? 'text' : 'password';
+				this.isPassword = !this.isPassword;
+			},
+			submit() {
 				this.$refs.pl.validate(valid => {
-					if (valid) {
-						this.$api.loginByPassword({
-							account: this.pl.account,
-							password: this.pl.password
-						}).then(res => {
-							this.$utils.setToken(res.token)
-							this.$utils.redirect(this.redirectUrl)
-						}).catch(e => {
-							this.$u.toast(e.msg)
-						})
-					}
+					if (valid) {}
 				})
 			},
-			loginByVerify() {
-				this.$refs.vl.validate(valid => {
-					if (valid) {
-						this.$api.loginByVerify({
-							account: this.vl.account,
-							verify_code: this.vl.verify_code
-						}).then(res => {
-							this.$utils.setToken(res.token)
-							this.$utils.redirect(this.redirectUrl)
-						}).catch(e => {
-							this.$u.toast(e.msg)
-						})
-					}
-				})
+			gotoLogin() {
+				uni.navigateTo({
+					url: '/pages/account/login'
+				});
 			},
-			gotoForget() {
-				this.$utils.redirect('/pages/account/forget')
-			},
-			gotoRegister() {
-				this.$utils.redirect('/pages/account/register')
-			}
 		}
 	}
 </script>
 
-<style>
+<style lang="scss">
+	.form-item .link {
+		display: flex;
+		justify-content: center;
+	}
 
+	.form-item .link text {
+		margin: 0 15rpx;
+		color: #007aff;
+	}
 </style>

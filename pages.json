@@ -3,9 +3,27 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
 			}
-		}, {
+		},
+		{
+			"path": "pages/index/category",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "分类",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path": "pages/index/user",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "我的",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
 			"path": "pages/account/login",
 			"style": {
 				"navigationBarTitleText": "用户登录",
@@ -25,9 +43,42 @@
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"pageOrientation": "portrait",
+		"navigationBarTitleText": "Hello uniapp",
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#007AFF",
+		"backgroundColor": "#F8F8F8",
+		"backgroundColorTop": "#F4F5F6",
+		"backgroundColorBottom": "#F4F5F6",
+		"h5": {
+			"maxWidth": 1190,
+			"navigationBarTextStyle": "black",
+			"navigationBarBackgroundColor": "#ffffff"
+		}
+	},
+	"tabBar": {
+		"color": "#666666",
+		"selectedColor": "#24A3FF",
+		"borderStyle": "white",
+		"backgroundColor": "#FFFFFF",
+		"list": [{
+				"pagePath": "pages/index/index",
+				"iconPath": "static/images/tabbar/home.png",
+				"selectedIconPath": "static/images/tabbar/home_fill.png",
+				"text": "首页"
+			},
+			{
+				"pagePath": "pages/index/category",
+				"text": "分类",
+				"iconPath": "static/images/tabbar/category.png",
+				"selectedIconPath": "/static/images/tabbar/category_fill.png"
+			},
+			{
+				"pagePath": "pages/index/user",
+				"text": "我的",
+				"iconPath": "static/images/tabbar/people.png",
+				"selectedIconPath": "/static/images/tabbar/people_fill.png"
+			}
+		]
 	}
 }

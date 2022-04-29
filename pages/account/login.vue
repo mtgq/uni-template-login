@@ -17,8 +17,8 @@
 			</view>
 			<view class="form-item">
 				<view class="link">
-					<text @click="loginType='verify'">验证码登录</text>
-					<text @click="gotoForget">忘记密码</text>
+					<!-- 			<text @click="loginType='verify'">验证码登录</text>
+					<text @click="gotoForget">忘记密码</text> -->
 					<text @click="gotoRegister">用户注册</text>
 				</view>
 			</view>
@@ -37,8 +37,8 @@
 			</view>
 			<view class="form-item">
 				<view class="link">
-					<text @click="loginType='password'">密码登录</text>
-					<text @click="gotoForget">忘记密码</text>
+					<!-- 				<text @click="loginType='password'">密码登录</text>
+					<text @click="gotoForget">忘记密码</text> -->
 					<text @click="gotoRegister">用户注册</text>
 				</view>
 			</view>
@@ -121,10 +121,11 @@
 			}
 		},
 		onShow() {
-			console.log(this.isLogin)
-			// if (this.$utils.isLogin()) {
-			// 	this.$utils.redirect('/pages/me/index')
-			// }
+			if (this.isLogin) {
+				uni.navigateTo({
+					url: '/pages/me/index'
+				});
+			}
 		},
 		methods: {
 			...mapActions(['getUserInfo']),
@@ -146,14 +147,11 @@
 							if (res.code == 200) {
 								this.getUserInfo(res.data);
 							}
-							// this.$utils.redirect(this.redirectUrl)
 						}).catch(err => {
 
 						})
 					}
-				}).catch(errors => {
-					uni.$u.toast('校验失败')
-				})
+				}).catch(errors => {})
 			},
 			loginByVerify() {
 				this.$refs.form2.validate(valid => {
